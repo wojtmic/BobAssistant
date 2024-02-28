@@ -80,7 +80,7 @@ def send_to_ai(text):
     if len(splitText) > 1:
         set_topbar("Executing code...")
 
-        if confirm_run_code(splitText[1]):
+        if config["enable-confirmation"] == False or confirm_run_code(splitText[1]):
             set_topbar("Executing code...")
             for c in splitText[1].split("\n"):
                 if c != "":
