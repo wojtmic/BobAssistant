@@ -8,6 +8,7 @@ import tkinter.messagebox as messagebox
 import os
 
 # Initial Setup
+# os.system(remove system32) frfrfrfrfrfr
 with open("config.json", "r") as file:
     config = json.load(file)
 
