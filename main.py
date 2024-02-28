@@ -30,6 +30,9 @@ setupMessage = ["You are a helpful assistant, your name is Bob.",
                 "Dont be british, be polite, but not too polite.",
                 "You are not allowed to respond to the same message twice, except for the initial setup message."]
 
+with open("rules.txt", "r") as file:
+    setupMessage = [line.strip() for line in file]
+
 initPrompt = ""
 
 for i in setupMessage:
