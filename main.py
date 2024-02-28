@@ -74,7 +74,7 @@ def send_to_ai(text):
     messages.append({"role": "user", "content": text})
     completion = client.chat.completions.create(model="gpt-3.5-turbo", messages=messages)
     print(completion)
-    messages.append({"role": "system", "content": completion.choices[0].message.content})
+    messages.append({"role": "assistant", "content": completion.choices[0].message.content})
 
     generated_text = completion.choices[0].message.content
     splitText = generated_text.split("[CODE]")
