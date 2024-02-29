@@ -1,4 +1,4 @@
 {
-  "enable-confirmation": true,
-  "api-key": "your-api-key-value"
+  "enable-confirmation": false,
+  "api-key": ""
 }

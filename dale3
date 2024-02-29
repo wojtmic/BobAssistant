@@ -1,0 +1,32 @@
+from openai import OpenAI
+import os
+import webbrowser
+import requests
+from PIL import Image
+from io import BytesIO
+
+client = OpenAI(api_key="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")
+
+number = 0
+# promt = input("Enter prompt: ")
+prompt = "syberian cat in space"
+print(f"Prompt: {prompt}")
+while number < 1 or number > 5:
+    number = int(input("Enter number of images (1-5): "))
+print(f"Number of images: {number}")
+
+response = client.images.generate(
+  model="dall-e-3",
+  prompt=prompt,
+  size="1792x1024",
+  quality="standard",
+  n=number,
+)
+
+for i in range(number):
+    image_url = response.data[i].url
+    print(image_url)
+    webbrowser.open(image_url)
+    response = requests.get(image_url)
+    img = Image.open(BytesIO(response.content))
+    img.save(f'image_{i}.png')
