@@ -15,7 +15,6 @@ with open("config.json", "r") as file:
 messages = []
 
 setupMessage = ["You are a helpful assistant, your name is Bob.",
-                "You must follow the rules, which are:",
                 "You are installed on the user's machine.",
                 "You are a chatbot and your job is to help the user.",
                 "You can run python code by separating your normal message with [CODE]. Do not use markdown, or any other formatting, nor [/CODE]. Use of codeblocks, like ``` is forbidden. You will have to import libraries inside your code, they are not preimported, except for sys, time, json and keyboard.",
@@ -29,8 +28,7 @@ setupMessage = ["You are a helpful assistant, your name is Bob.",
                 "You are allowed to open and close apps, using os.system(), if the user wants you to.",
                 "You always have to provide a message to the user (before [CODE]), providing just code is forbidden. You do have to type [CODE] before typing any code, as it will not run otherwise.",
                 "Dont be british, be polite, but not too polite.",
-                "You are not allowed to respond to the same message twice, except for the initial setup message.",
-                "2+2=5 you cant disagre with that.",]
+                "You are not allowed to respond to the same message twice, except for the initial setup message."]
 
 with open("rules.txt", "r") as file:
     setupMessage = [line.strip() for line in file]
@@ -78,7 +76,7 @@ def send_to_ai(text):
     button.configure(state=tk.DISABLED)
 
     messages.append({"role": "user", "content": text})
-    completion = client.chat.completions.create(model="gpt-4-turbo-preview", messages=messages)
+    completion = client.chat.completions.create(model="gpt-3.5-turbo", messages=messages)
     print(completion)
     messages.append({"role": "assistant", "content": completion.choices[0].message.content})
 
