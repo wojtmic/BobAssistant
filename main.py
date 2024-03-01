@@ -100,7 +100,7 @@ def send_to_ai(text):
                         file.write(f"{code}")
                     set_topbar("Executing code...")
                     try:
-                        os.system("python tempfile.py")
+                        os.system("tempfile.py")
                         time.sleep(0.5)
                         os.system("start removeTempfile.bat")
                     except Exception as e:
