@@ -42,9 +42,12 @@ def button_press():
 def focus_entry():
     entry.focus_set()
 
-def confirm_run_code(code):
+def confirm_run_code(code,confirm=True):
         title = "Confirmation"
-        message = f"Do you want to run the following code?\n\n{code}"
+        if confirm:
+            message = f"Do you want to run the following code?\n\n{code}"
+        else:
+            message = code
         result = messagebox.askyesno(title, message)
         return result
 
@@ -66,15 +69,35 @@ def send_to_ai(text):
 
     if len(splitText) > 1:
         set_topbar("Executing code...")
-
-        if config["enable-confirmation"] == False or confirm_run_code(splitText[1]):
-            set_topbar("Executing code...")
-            for c in splitText[1].split("\n"):
-                if c != "":
+        code = splitText[1]
+        code = code.replace("`","")
+        code = code.replace("[/CODE]","")
+        if config["enable-confirmation"] == False or confirm_run_code(code):
+            if (code.find("for") or code.find("while") or code.find("if") or code.find("with") or code.find("def")) and code.find(":"):
+                tempcode = True
+            else:
+                tempcode = False
+            if tempcode == False:
+                set_topbar("Executing code...")
+                for c in code.split("\n"):
+                    if c != "":
+                        try:
+                            exec(c)
+                        except Exception as e:
+                            ui_print(f"Error: {e}")
+            else:
+                if config["enable-confirmation"] == False or confirm_run_code("Warning: This code contains instructions that require it to be saved and run in a separate file.\nThe file will be automaticly deleted after execution.\nYou require a Python interpreter installed on your device.", False):
+                    with open("tempfile.py", "w") as file:
+                        file.write(f"{code}")
+                    set_topbar("Executing code...")
                     try:
-                        exec(c)
+                        os.system("python tempfile.py")
+                        time.sleep(0.5)
+                        os.system("start removeTempfile.bat")
                     except Exception as e:
                         ui_print(f"Error: {e}")
+                else:
+                    set_topbar("Code execution cancelled.")
         else:
             set_topbar("Code execution cancelled.")
     else:
