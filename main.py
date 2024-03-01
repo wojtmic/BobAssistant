@@ -59,7 +59,11 @@ def send_to_ai(text):
     entry.configure(state=tk.DISABLED)
     button.configure(state=tk.DISABLED)
 
-    messages.append({"role": "user", "content": text})
+    if text.startswith("sudo") and confirm_run_code("Warning: By using sudo, your message will be sent to the AI as a system message and is not recommended. Are you sure you want to continue?", False):
+        messages.append({"role": "system", "content": text})
+    else:
+        messages.append({"role": "user", "content": text})
+
     completion = client.chat.completions.create(model=config["model"], messages=messages)
     print(completion)
     messages.append({"role": "assistant", "content": completion.choices[0].message.content})
