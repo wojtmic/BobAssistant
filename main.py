@@ -25,6 +25,11 @@ initPrompt = {"role": "system", "content": f"{initPrompt}"}
 messages.append(initPrompt)
 
 # Functions
+def clear_textbox():
+    result_text.configure(state=tk.NORMAL)
+    result_text.delete(1.0, tk.END)
+    result_text.configure(state=tk.DISABLED)
+
 def set_topbar(text):
     topbar.configure(text=text)
 
