@@ -5,3 +5,10 @@ The person that's writing this, HAHOOS aka Cheese, has no knowledge of Python bu
 If you experience any issues with the code, make sure to post the issue so our nice developer Wojtmic can fix it (hes keeping me in a basement (no im not))
 
 Wish you happy time talking with Bob, he's not very social to be honest.
+
+And the team behind it:
+- Wojtmic: Im programing this, lead developer and stuff.
+- Tymon3310: He made the website and uh, testing, i guess.
+- HAHOOS (aka cheese): The readme, and more testing, i guess.
+
+If you want to help, feel free to make a pull request, issues are broken beacuse GitHub. If you encounter a bug, report it [here](https://discord.gg/QKbYxPDsMc).
