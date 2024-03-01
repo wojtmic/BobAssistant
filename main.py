@@ -73,7 +73,7 @@ def send_to_ai(text):
         code = code.replace("`","")
         code = code.replace("[/CODE]","")
         if config["enable-confirmation"] == False or confirm_run_code(code):
-            if (code.find("for") or code.find("while") or code.find("if") or code.find("with") or code.find("def")) and code.find(":"):
+            if ("for" in code or "while" in code or "if" in code or "with" in code or "def" in code) and ":" in code:
                 tempcode = True
             else:
                 tempcode = False
