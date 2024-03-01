@@ -10,3 +10,5 @@ And the team behind it:
 - Wojtmic: Im programing this, lead developer and stuff.
 - Tymon3310: He made the website and uh, testing, i guess.
 - HAHOOS (aka cheese): The readme, and more testing, i guess.
+
+If you want to help, feel free to make a pull request, issues are broken beacuse GitHub. If you encounter a bug, report it [here](https://discord.gg/QKbYxPDsMc).
