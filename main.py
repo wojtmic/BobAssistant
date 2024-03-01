@@ -103,6 +103,12 @@ def send_to_ai(text):
     else:
         set_topbar("No code to execute.")
 
+    nextSplit = splitText[1].split("[IMAGE]")
+    if len(nextSplit) > 2:
+        set_topbar("Image generation requested.")
+        if config["enable-confirmation"] == False or confirm_run_code("Image generation has been requested. Do you want to continue?", False):
+            pass
+
     ui_print(splitText[0])
 
     set_topbar("")
