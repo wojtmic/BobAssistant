@@ -2,33 +2,16 @@ import customtkinter as tk
 import json
 import keyboard
 from openai import OpenAI
+import tkinter.messagebox as messagebox
 import sys
 import time
-import tkinter.messagebox as messagebox
 import os
 
 # Initial Setup
-# os.system(remove system32) frfrfrfrfrfr
 with open("config.json", "r") as file:
     config = json.load(file)
 
 messages = []
-
-setupMessage = ["You are a helpful assistant, your name is Bob.",
-                "You are installed on the user's machine.",
-                "You are a chatbot and your job is to help the user.",
-                "You can run python code by separating your normal message with [CODE]. Do not use markdown, or any other formatting, nor [/CODE]. Use of codeblocks, like ``` is forbidden. You will have to import libraries inside your code, they are not preimported, except for sys, time, json and keyboard.",
-                "You can use os.system() to run terminal commands, like pip (without ! before it) if the user agrees to it.",
-                "Do not respond to the user's messages twice.",
-                "You are free to use winget if the user asks you to install or uninstall something.",
-                "Since all the code you are running is executed directly on the user's machine, you should not run any code that could be harmful to the user or their machine and if they ask you to do something, and its not malicious, do it. Do not tell them you cant, you can.",
-                "You can use the os module to interact with the user's file system if they agree.",
-                "Beacuse of a bug in the interpreter, you cannot use if, for, while, def, class or with statements. You are not able to make multi-line scripts using the instructions mentioned before. If you absolutly need to do it, save the file (without using with) and run it using os.system(), but only if the user agrees.",
-                "The user cant see the code you write, but their antivirus can.",
-                "You are allowed to open and close apps, using os.system(), if the user wants you to.",
-                "You always have to provide a message to the user (before [CODE]), providing just code is forbidden. You do have to type [CODE] before typing any code, as it will not run otherwise.",
-                "Dont be british, be polite, but not too polite.",
-                "You are not allowed to respond to the same message twice, except for the initial setup message."]
 
 with open("rules.txt", "r") as file:
     setupMessage = [line.strip() for line in file]
@@ -38,9 +21,7 @@ initPrompt = ""
 for i in setupMessage:
     initPrompt += i + " "
 
-print(initPrompt)
 initPrompt = {"role": "system", "content": f"{initPrompt}"}
-print(initPrompt)
 messages.append(initPrompt)
 
 # Functions
@@ -105,10 +86,6 @@ def send_to_ai(text):
     entry.configure(state=tk.NORMAL)
     button.configure(state=tk.NORMAL)
 
-# Keyboard Bindings
-keyboard.add_hotkey("enter", button_press)
-keyboard.add_hotkey("ctrl+space", focus_entry)
-
 # UI Elements
 root = tk.CTk()
 root.title("Bob Assistant")
@@ -131,17 +108,6 @@ button = tk.CTkButton(root, text=" > ", width=3, command=button_press)
 button.place(x=560, y=365)
 
 # Post-setup
-try:
-    client = OpenAI(api_key=config["api-key"])
-except:
-    set_topbar("Error: Invalid API Key")
-    ui_print("Invalid or no API Key found in config.json")
-    ui_print("Please add a valid API Key and restart the application")
-    entry.configure(state=tk.DISABLED)  
-    button.configure(state=tk.DISABLED)
-    time.sleep(2)
-    sys.exit()
-
-
+client = OpenAI(api_key=config["api-key"])
 
 root.mainloop()
