@@ -86,14 +86,15 @@ def send_to_ai(text):
                 tempcode = True
             else:
                 tempcode = False
-            if tempcode == False:
+            if tempcode == False or True:
                 set_topbar("Executing code...")
-                for c in code.split("\n"):
-                    if c != "":
-                        try:
-                            exec(c)
-                        except Exception as e:
-                            ui_print(f"Error: {e}")
+                exec(code)
+                # for c in code.split("\n"):
+                #     if c != "":
+                #         try:
+                #             exec(c)
+                #         except Exception as e:
+                #             ui_print(f"Error: {e}")
             else:
                 if config["enable-confirmation"] == False or confirm_run_code("Warning: This code contains instructions that require it to be saved and run in a separate file.\nThe file will be automaticly deleted after execution.\nYou require a Python interpreter installed on your device.", False):
                     with open("tempfile.py", "w") as file:
