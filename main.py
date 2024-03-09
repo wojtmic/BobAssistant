@@ -129,6 +129,13 @@ def send_to_ai(text):
     else:
         set_topbar("No code to execute.")
 
+    if "[END]" in text:
+        set_topbar("Goodbye!")
+        entry.configure(state=tk.DISABLED)
+        button.configure(state=tk.DISABLED)
+        time.sleep(1)
+        sys.exit()
+
     # nextSplit = splitText[1].split("[IMAGE]")
     # if len(nextSplit) > 2:
     #     set_topbar("Image generation requested.")
