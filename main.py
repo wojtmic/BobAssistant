@@ -58,7 +58,6 @@ def add_message(role, content, color="grey"):
 def button_press():
     text = entry.get()
     entry.delete(0, tk.END)
-    add_message("You", text)
     send_to_ai(text)
 
 def focus_entry():
@@ -77,74 +76,82 @@ def send_to_ai(text):
     global client
     global messages
 
+    is_sudo = False
+
     set_topbar("Bob is thinking...")
     entry.configure(state=tk.DISABLED)
     button.configure(state=tk.DISABLED)
 
     if text.startswith("sudo") and confirm_run_code("Warning: By using sudo, your message will be sent to the AI as a system message and is not recommended. Are you sure you want to continue?", False):
         messages.append({"role": "system", "content": text.replace("sudo","")})
+        is_sudo = True
     else:
         messages.append({"role": "user", "content": text})
 
-    completion = client.chat.completions.create(model=config["model"], messages=messages)
-    print(completion)
-    messages.append({"role": "assistant", "content": completion.choices[0].message.content})
-
-    generated_text = completion.choices[0].message.content
-    splitText = generated_text.split("[CODE]")
-
-    if len(splitText) > 1:
-        set_topbar("Executing code...")
-        code = splitText[1]
-        code = code.replace("`","")
-        code = code.replace("[/CODE]","")
-        if config["enable-confirmation"] == False or confirm_run_code(code):
-            if ("for" in code or "while" in code or "if" in code or "with" in code or "def" in code) and ":" in code:
-                tempcode = True
-            else:
-                tempcode = False
-            if tempcode == False or True:
-                set_topbar("Executing code...")
-                exec(code)
-                # for c in code.split("\n"):
-                #     if c != "":
-                #         try:
-                #             exec(c)
-                #         except Exception as e:
-                #             ui_print(f"Error: {e}")
-            else:
-                if config["enable-confirmation"] == False or confirm_run_code("Warning: This code contains instructions that require it to be saved and run in a separate file.\nThe file will be automaticly deleted after execution.\nYou require a Python interpreter installed on your device.", False):
-                    with open("tempfile.py", "w") as file:
-                        file.write(f"{code}")
-                    set_topbar("Executing code...")
-                    try:
-                        os.system("tempfile.py")
-                        time.sleep(0.5)
-                        os.system("start removeTempfile.bat")
-                    except Exception as e:
-                        ui_print(f"Error: {e}")
-                else:
-                    set_topbar("Code execution cancelled.")
-        else:
-            set_topbar("Code execution cancelled.")
+    if is_sudo:
+        add_message("System", text.replace("sudo",""), "#ff0000")
     else:
-        set_topbar("No code to execute.")
+        add_message("You", text)
 
-    # nextSplit = splitText[1].split("[IMAGE]")
-    # if len(nextSplit) > 2:
-    #     set_topbar("Image generation requested.")
-    #     if config["enable-confirmation"] == False or confirm_run_code("Image generation has been requested. Do you want to continue?", False):
-    #         pass
+        completion = client.chat.completions.create(model=config["model"], messages=messages)
+        print(completion)
+        messages.append({"role": "assistant", "content": completion.choices[0].message.content})
 
-    splitText[0] = splitText[0].replace("[END]","")
-    add_message("Bob", splitText[0], "#1776e3")
-    root.update()
-    root.update_idletasks()
+        generated_text = completion.choices[0].message.content
+        splitText = generated_text.split("[CODE]")
 
-    if "[END]" in generated_text:
-        set_topbar("Goodbye!")
-        time.sleep(2)
-        sys.exit()
+        if len(splitText) > 1:
+            set_topbar("Executing code...")
+            code = splitText[1]
+            code = code.replace("`","")
+            code = code.replace("[/CODE]","")
+            if config["enable-confirmation"] == False or confirm_run_code(code):
+                if ("for" in code or "while" in code or "if" in code or "with" in code or "def" in code) and ":" in code:
+                    tempcode = True
+                else:
+                    tempcode = False
+                if tempcode == False or True:
+                    set_topbar("Executing code...")
+                    exec(code)
+                    # for c in code.split("\n"):
+                    #     if c != "":
+                    #         try:
+                    #             exec(c)
+                    #         except Exception as e:
+                    #             ui_print(f"Error: {e}")
+                else:
+                    if config["enable-confirmation"] == False or confirm_run_code("Warning: This code contains instructions that require it to be saved and run in a separate file.\nThe file will be automaticly deleted after execution.\nYou require a Python interpreter installed on your device.", False):
+                        with open("tempfile.py", "w") as file:
+                            file.write(f"{code}")
+                        set_topbar("Executing code...")
+                        try:
+                            os.system("tempfile.py")
+                            time.sleep(0.5)
+                            os.system("start removeTempfile.bat")
+                        except Exception as e:
+                            ui_print(f"Error: {e}")
+                    else:
+                        set_topbar("Code execution cancelled.")
+            else:
+                set_topbar("Code execution cancelled.")
+        else:
+            set_topbar("No code to execute.")
+
+        # nextSplit = splitText[1].split("[IMAGE]")
+        # if len(nextSplit) > 2:
+        #     set_topbar("Image generation requested.")
+        #     if config["enable-confirmation"] == False or confirm_run_code("Image generation has been requested. Do you want to continue?", False):
+        #         pass
+
+        splitText[0] = splitText[0].replace("[END]","")
+        add_message("Bob", splitText[0], "#1776e3")
+        root.update()
+        root.update_idletasks()
+
+        if "[END]" in generated_text:
+            set_topbar("Goodbye!")
+            time.sleep(2)
+            sys.exit()
 
     set_topbar("")
     entry.configure(state=tk.NORMAL)
