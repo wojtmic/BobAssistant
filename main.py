@@ -42,6 +42,7 @@ def ui_print(text):
 
 def add_message(role, content, color="grey"):
     role = role.strip()
+    content = content.strip()
     
     message_frame = tk.CTkFrame(chatbox, width=550, height=50, fg_color=color)
     message_frame.pack(side=tk.TOP, pady=5, fill=tk.BOTH, expand=True)
