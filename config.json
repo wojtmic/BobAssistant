@@ -1,6 +1,0 @@
-{
-  "enable-confirmation": true,
-  "api-key": "API KEY HERE",
-  "model": "gpt-4-turbo-preview",
-  "image-model": "dall-e-2"
-}
