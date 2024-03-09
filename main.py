@@ -49,7 +49,7 @@ def add_message(role, content, color="grey"):
     role_label = tk.CTkLabel(message_frame, text=role, font=("Helvetica", 12, "bold"))
     role_label.grid(row=0, column=0, padx=5, sticky="nw")
 
-    content_label = tk.CTkLabel(message_frame, text=content, font=("Helvetica", 12), wraplength=500)
+    content_label = tk.CTkLabel(message_frame, text=content, font=("Helvetica", 12), wraplength=500, anchor="w")
     content_label.grid(row=1, column=0, padx=5)
 
     chatbox.after(10, chatbox._parent_canvas.yview_moveto, 1.0)
@@ -92,6 +92,13 @@ def send_to_ai(text):
     generated_text = completion.choices[0].message.content
     splitText = generated_text.split("[CODE]")
 
+    if "[END]" in generated_text:
+        set_topbar("Goodbye!")
+        entry.configure(state=tk.DISABLED)
+        button.configure(state=tk.DISABLED)
+        time.sleep(1)
+        sys.exit()
+
     if len(splitText) > 1:
         set_topbar("Executing code...")
         code = splitText[1]
@@ -128,13 +135,6 @@ def send_to_ai(text):
             set_topbar("Code execution cancelled.")
     else:
         set_topbar("No code to execute.")
-
-    if "[END]" in text:
-        set_topbar("Goodbye!")
-        entry.configure(state=tk.DISABLED)
-        button.configure(state=tk.DISABLED)
-        time.sleep(1)
-        sys.exit()
 
     # nextSplit = splitText[1].split("[IMAGE]")
     # if len(nextSplit) > 2:
