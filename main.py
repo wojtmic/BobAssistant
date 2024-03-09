@@ -49,7 +49,7 @@ def add_message(role, content, color="grey"):
     role_label = tk.CTkLabel(message_frame, text=role, font=("Helvetica", 12, "bold"))
     role_label.grid(row=0, column=0, padx=5, sticky="nw")
 
-    content_label = tk.CTkLabel(message_frame, text=content, font=("Helvetica", 12), wraplength=500, anchor="w")
+    content_label = tk.CTkLabel(message_frame, text=content, font=("Helvetica", 12), wraplength=500, anchor="w", justify="left")
     content_label.grid(row=1, column=0, padx=5)
 
     chatbox.after(10, chatbox._parent_canvas.yview_moveto, 1.0)
@@ -81,7 +81,7 @@ def send_to_ai(text):
     button.configure(state=tk.DISABLED)
 
     if text.startswith("sudo") and confirm_run_code("Warning: By using sudo, your message will be sent to the AI as a system message and is not recommended. Are you sure you want to continue?", False):
-        messages.append({"role": "system", "content": text})
+        messages.append({"role": "system", "content": text.replace("sudo","")})
     else:
         messages.append({"role": "user", "content": text})
 
