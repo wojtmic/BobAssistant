@@ -12,6 +12,7 @@ with open("config.json", "r") as file:
     config = json.load(file)
 
 messages = []
+chatMessages = []
 
 with open("rules.txt", "r") as file:
     setupMessage = [line.strip() for line in file]
@@ -39,9 +40,24 @@ def ui_print(text):
     result_text.configure(state=tk.DISABLED)
     result_text.see(tk.END)
 
+def add_message(role, content, color="grey"):
+    role = role.strip()
+
+    message_frame = tk.CTkFrame(chatbox, width=550, height=50, fg_color=color)
+    message_frame.pack(side=tk.TOP, pady=5, fill=tk.BOTH, expand=True)
+
+    role_label = tk.CTkLabel(message_frame, text=role, font=("Helvetica", 10, "bold"))
+    role_label.grid(row=0, column=0, padx=5, sticky="nw")
+
+    content_label = tk.CTkLabel(message_frame, text=content, font=("Helvetica", 10))
+    content_label.grid(row=1, column=0, padx=5)
+
+    chatbox.after(10, chatbox._parent_canvas.yview_moveto, 1.0)
+
 def button_press():
     text = entry.get()
     entry.delete(0, tk.END)
+    add_message("You", text)
     send_to_ai(text)
 
 def focus_entry():
@@ -119,7 +135,7 @@ def send_to_ai(text):
     #     if config["enable-confirmation"] == False or confirm_run_code("Image generation has been requested. Do you want to continue?", False):
     #         pass
 
-    ui_print(splitText[0])
+    add_message("Bob", splitText[0], "#1776e3")
 
     set_topbar("")
     entry.configure(state=tk.NORMAL)
@@ -138,7 +154,10 @@ topbar = tk.CTkLabel(top_bar, text="Send a message to begin.", font=("Helvetica"
 topbar.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
 result_text = tk.CTkTextbox(root, width=575, height=325, state=tk.DISABLED)
-result_text.place(x=10, y=35)
+# result_text.place(x=10, y=35)
+
+chatbox = tk.CTkScrollableFrame(root, width=575, height=325)
+chatbox.place(x=10, y=35)
 
 entry = tk.CTkEntry(root, width=530)
 entry.place(x=20, y=365)
