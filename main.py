@@ -135,12 +135,14 @@ def send_to_ai(text):
     #     if config["enable-confirmation"] == False or confirm_run_code("Image generation has been requested. Do you want to continue?", False):
     #         pass
 
-    splitText[0].replace("[END]","")
+    splitText[0] = splitText[0].replace("[END]","")
     add_message("Bob", splitText[0], "#1776e3")
+    root.update()
+    root.update_idletasks()
 
     if "[END]" in generated_text:
         set_topbar("Goodbye!")
-        time.sleep(1)
+        time.sleep(2)
         sys.exit()
 
     set_topbar("")
