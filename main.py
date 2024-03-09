@@ -46,10 +46,10 @@ def add_message(role, content, color="grey"):
     message_frame = tk.CTkFrame(chatbox, width=550, height=50, fg_color=color)
     message_frame.pack(side=tk.TOP, pady=5, fill=tk.BOTH, expand=True)
 
-    role_label = tk.CTkLabel(message_frame, text=role, font=("Helvetica", 10, "bold"))
+    role_label = tk.CTkLabel(message_frame, text=role, font=("Helvetica", 12, "bold"))
     role_label.grid(row=0, column=0, padx=5, sticky="nw")
 
-    content_label = tk.CTkLabel(message_frame, text=content, font=("Helvetica", 10))
+    content_label = tk.CTkLabel(message_frame, text=content, font=("Helvetica", 12))
     content_label.grid(row=1, column=0, padx=5)
 
     chatbox.after(10, chatbox._parent_canvas.yview_moveto, 1.0)
