@@ -82,64 +82,65 @@ def confirm_run_code(code,confirm=True):
         return result
 
 def send_to_ai(text):
-    global client
-    global messages
+    if text.strip() != "":
+        global client
+        global messages
 
-    is_sudo = False
+        is_sudo = False
 
-    set_topbar("Bob is thinking...")
-    entry.configure(state=tk.DISABLED)
-    button.configure(state=tk.DISABLED)
+        set_topbar("Bob is thinking...")
+        entry.configure(state=tk.DISABLED)
+        button.configure(state=tk.DISABLED)
 
-    if text.startswith("sudo") and confirm_run_code("Warning: By using sudo, your message will be sent to the AI as a system message and is not recommended. Are you sure you want to continue?", False):
-        messages.append({"role": "system", "content": text.replace("sudo","")})
-        is_sudo = True
-    else:
-        messages.append({"role": "user", "content": text})
-
-    if is_sudo:
-        add_message("System", text.replace("sudo",""), "#ff0000")
-    else:
-        add_message("You", text)
-
-        completion = client.chat.completions.create(model=config["model"], messages=messages)
-        messages.append({"role": "assistant", "content": completion.choices[0].message.content})
-
-        generated_text = completion.choices[0].message.content
-        splitText = generated_text.split("[CODE]")
-
-        splitText[0] = splitText[0].replace("[END]","")
-        add_message("Bob", splitText[0], "#1776e3")
-        root.update()
-        root.update_idletasks()
-
-        if "[END]" in generated_text and False: # I'm disabling this for now, Bob is using it when he shouldn't.
-            set_topbar("Goodbye!")
-            time.sleep(2)
-            sys.exit()
-
-        if len(splitText) > 1:
-            set_topbar("Executing code...")
-            code = splitText[1]
-            code = code.replace("`","")
-            code = code.replace("[/CODE]","")
-            if config["enable-confirmation"] == False or confirm_run_code(code):
-                set_topbar("Executing code...")
-                output = io.StringIO()
-                sys.stdout = output
-                exec(code)
-                sys.stdout = sys.__stdout__
-                output = output.getvalue()
-                add_message("Output", output, "#0ec445")
-                messages.append({"role": "system", "content": f"Code output: {output}"})
-            else:
-                set_topbar("Code execution cancelled.")
+        if text.startswith("sudo") and confirm_run_code("Warning: By using sudo, your message will be sent to the AI as a system message and is not recommended. Are you sure you want to continue?", False):
+            messages.append({"role": "system", "content": text.replace("sudo","")})
+            is_sudo = True
         else:
-            set_topbar("No code to execute.")
+            messages.append({"role": "user", "content": text})
 
-    set_topbar("")
-    entry.configure(state=tk.NORMAL)
-    button.configure(state=tk.NORMAL)
+        if is_sudo:
+            add_message("System", text.replace("sudo",""), "#ff0000")
+        else:
+            add_message("You", text)
+
+            completion = client.chat.completions.create(model=config["model"], messages=messages)
+            messages.append({"role": "assistant", "content": completion.choices[0].message.content})
+
+            generated_text = completion.choices[0].message.content
+            splitText = generated_text.split("[CODE]")
+
+            splitText[0] = splitText[0].replace("[END]","")
+            add_message("Bob", splitText[0], "#1776e3")
+            root.update()
+            root.update_idletasks()
+
+            if "[END]" in generated_text and False: # I'm disabling this for now, Bob is using it when he shouldn't.
+                set_topbar("Goodbye!")
+                time.sleep(2)
+                sys.exit()
+
+            if len(splitText) > 1:
+                set_topbar("Executing code...")
+                code = splitText[1]
+                code = code.replace("`","")
+                code = code.replace("[/CODE]","")
+                if config["enable-confirmation"] == False or confirm_run_code(code):
+                    set_topbar("Executing code...")
+                    output = io.StringIO()
+                    sys.stdout = output
+                    exec(code)
+                    sys.stdout = sys.__stdout__
+                    output = output.getvalue()
+                    add_message("Output", output, "#0ec445")
+                    messages.append({"role": "system", "content": f"Code output: {output}"})
+                else:
+                    set_topbar("Code execution cancelled.")
+            else:
+                set_topbar("No code to execute.")
+
+        set_topbar("")
+        entry.configure(state=tk.NORMAL)
+        button.configure(state=tk.NORMAL)
 
 def send_to_ai_thread(text):
     threading.Thread(target=send_to_ai, args=(text,)).start()
