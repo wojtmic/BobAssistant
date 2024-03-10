@@ -7,3 +7,5 @@ Bob 2.0.lnk
 config.json
 config.json
 /output
+/dist
+/build
