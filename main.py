@@ -27,19 +27,19 @@ initPrompt = {"role": "system", "content": f"{initPrompt}"}
 messages.append(initPrompt)
 
 # Functions
-def clear_textbox():
-    result_text.configure(state=tk.NORMAL)
-    result_text.delete(1.0, tk.END)
-    result_text.configure(state=tk.DISABLED)
+# def clear_textbox():
+#     result_text.configure(state=tk.NORMAL)
+#     result_text.delete(1.0, tk.END)
+#     result_text.configure(state=tk.DISABLED)
 
 def set_topbar(text):
     topbar.configure(text=text)
 
-def ui_print(text):
-    result_text.configure(state=tk.NORMAL)
-    result_text.insert(tk.END, text + "\n")
-    result_text.configure(state=tk.DISABLED)
-    result_text.see(tk.END)
+# def ui_print(text):
+#     result_text.configure(state=tk.NORMAL)
+#     result_text.insert(tk.END, text + "\n")
+#     result_text.configure(state=tk.DISABLED)
+#     result_text.see(tk.END)
 
 def add_message(role, content, color="grey"):
     role = str(role)
@@ -136,11 +136,16 @@ def send_to_ai(text):
     entry.configure(state=tk.NORMAL)
     button.configure(state=tk.NORMAL)
 
+def on_enter_key(event):
+    button_press()
+
 # UI Elements
 root = tk.CTk()
 root.title("Bob Assistant")
 root.geometry("600x400")
 root.resizable(False, False)
+
+root.bind('<Return>', on_enter_key)
 
 top_bar = tk.CTkFrame(root, width=600, height=30)
 top_bar.place(x=0, y=0)
@@ -148,11 +153,11 @@ top_bar.place(x=0, y=0)
 topbar = tk.CTkLabel(top_bar, text="Send a message to begin.", font=("Helvetica", 12))
 topbar.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
-result_text = tk.CTkTextbox(root, width=575, height=325, state=tk.DISABLED)
+# result_text = tk.CTkTextbox(root, width=575, height=325, state=tk.DISABLED)
 # result_text.place(x=10, y=35)
 
 chatbox = tk.CTkScrollableFrame(root, width=575, height=325)
-chatbox.place(x=10, y=35)
+chatbox.place(x=0, y=35)
 
 entry = tk.CTkEntry(root, width=530)
 entry.place(x=20, y=365)
