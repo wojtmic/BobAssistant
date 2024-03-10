@@ -6,6 +6,7 @@ import tkinter.messagebox as messagebox
 import sys
 import time
 import os
+import io
 
 # Initial Setup
 with open("config.json", "r") as file:
@@ -41,6 +42,9 @@ def ui_print(text):
     result_text.see(tk.END)
 
 def add_message(role, content, color="grey"):
+    role = str(role)
+    content = str(content)
+
     role = role.strip()
     content = content.strip()
     
@@ -94,11 +98,20 @@ def send_to_ai(text):
         add_message("You", text)
 
         completion = client.chat.completions.create(model=config["model"], messages=messages)
-        print(completion)
         messages.append({"role": "assistant", "content": completion.choices[0].message.content})
 
         generated_text = completion.choices[0].message.content
         splitText = generated_text.split("[CODE]")
+
+        splitText[0] = splitText[0].replace("[END]","")
+        add_message("Bob", splitText[0], "#1776e3")
+        root.update()
+        root.update_idletasks()
+
+        if "[END]" in generated_text and False: # I'm disabling this for now, Bob is using it when he shouldn't.
+            set_topbar("Goodbye!")
+            time.sleep(2)
+            sys.exit()
 
         if len(splitText) > 1:
             set_topbar("Executing code...")
@@ -106,52 +119,18 @@ def send_to_ai(text):
             code = code.replace("`","")
             code = code.replace("[/CODE]","")
             if config["enable-confirmation"] == False or confirm_run_code(code):
-                if ("for" in code or "while" in code or "if" in code or "with" in code or "def" in code) and ":" in code:
-                    tempcode = True
-                else:
-                    tempcode = False
-                if tempcode == False or True:
-                    set_topbar("Executing code...")
-                    exec(code)
-                    # for c in code.split("\n"):
-                    #     if c != "":
-                    #         try:
-                    #             exec(c)
-                    #         except Exception as e:
-                    #             ui_print(f"Error: {e}")
-                else:
-                    if config["enable-confirmation"] == False or confirm_run_code("Warning: This code contains instructions that require it to be saved and run in a separate file.\nThe file will be automaticly deleted after execution.\nYou require a Python interpreter installed on your device.", False):
-                        with open("tempfile.py", "w") as file:
-                            file.write(f"{code}")
-                        set_topbar("Executing code...")
-                        try:
-                            os.system("tempfile.py")
-                            time.sleep(0.5)
-                            os.system("start removeTempfile.bat")
-                        except Exception as e:
-                            ui_print(f"Error: {e}")
-                    else:
-                        set_topbar("Code execution cancelled.")
+                set_topbar("Executing code...")
+                output = io.StringIO()
+                sys.stdout = output
+                exec(code)
+                sys.stdout = sys.__stdout__
+                output = output.getvalue()
+                add_message("Output", output, "#0ec445")
+                messages.append({"role": "output", "content": output})
             else:
                 set_topbar("Code execution cancelled.")
         else:
             set_topbar("No code to execute.")
-
-        # nextSplit = splitText[1].split("[IMAGE]")
-        # if len(nextSplit) > 2:
-        #     set_topbar("Image generation requested.")
-        #     if config["enable-confirmation"] == False or confirm_run_code("Image generation has been requested. Do you want to continue?", False):
-        #         pass
-
-        splitText[0] = splitText[0].replace("[END]","")
-        add_message("Bob", splitText[0], "#1776e3")
-        root.update()
-        root.update_idletasks()
-
-        if "[END]" in generated_text:
-            set_topbar("Goodbye!")
-            time.sleep(2)
-            sys.exit()
 
     set_topbar("")
     entry.configure(state=tk.NORMAL)
