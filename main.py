@@ -66,7 +66,7 @@ def modify_message(index, content):
 def button_press():
     text = entry.get()
     entry.delete(0, tk.END)
-    send_to_ai(text)
+    send_to_ai_thread(text)
 
 def focus_entry():
     entry.focus_set()
@@ -95,7 +95,7 @@ def send_to_ai(text):
         is_sudo = True
     else:
         messages.append({"role": "user", "content": text})
-    
+
     if is_sudo:
         add_message("System", text.replace("sudo",""), "#ff0000")
     else:
@@ -139,6 +139,9 @@ def send_to_ai(text):
     set_topbar("")
     entry.configure(state=tk.NORMAL)
     button.configure(state=tk.NORMAL)
+
+def send_to_ai_thread(text):
+    threading.Thread(target=send_to_ai, args=(text,)).start()
 
 def on_enter_key(event):
     button_press()
