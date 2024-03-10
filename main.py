@@ -7,6 +7,7 @@ import sys
 import time
 import os
 import io
+import threading
 
 # Initial Setup
 with open("config.json", "r") as file:
@@ -59,6 +60,9 @@ def add_message(role, content, color="grey"):
 
     chatbox.after(10, chatbox._parent_canvas.yview_moveto, 1.0)
 
+def modify_message(index, content):
+    chatbox.children[index].children[1].configure(text=content)
+
 def button_press():
     text = entry.get()
     entry.delete(0, tk.END)
@@ -91,7 +95,7 @@ def send_to_ai(text):
         is_sudo = True
     else:
         messages.append({"role": "user", "content": text})
-
+    
     if is_sudo:
         add_message("System", text.replace("sudo",""), "#ff0000")
     else:
@@ -126,7 +130,7 @@ def send_to_ai(text):
                 sys.stdout = sys.__stdout__
                 output = output.getvalue()
                 add_message("Output", output, "#0ec445")
-                messages.append({"role": "output", "content": output})
+                messages.append({"role": "function", "content": output})
             else:
                 set_topbar("Code execution cancelled.")
         else:
