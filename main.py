@@ -131,7 +131,7 @@ def send_to_ai(text):
                 sys.stdout = sys.__stdout__
                 output = output.getvalue()
                 add_message("Output", output, "#0ec445")
-                messages.append({"role": "function", "content": output})
+                messages.append({"role": "system", "content": f"Code output: {output}"})
             else:
                 set_topbar("Code execution cancelled.")
         else:
