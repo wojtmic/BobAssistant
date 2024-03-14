@@ -9,3 +9,4 @@ config.json
 /output
 /dist
 /build
+/__pycache__
