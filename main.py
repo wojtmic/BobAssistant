@@ -17,8 +17,11 @@ with open("config.json", "r") as file:
 messages = []
 chatMessages = []
 
-with open("rules.txt", "r") as file:
-    setupMessage = [line.strip() for line in file]
+if os.path.exists("rules.txt"):
+    with open("rules.txt", "r") as file:
+        setupMessage = [line.strip() for line in file]
+else:
+    setupMessage = []
 
 initPrompt = ""
 
@@ -27,6 +30,13 @@ for i in setupMessage:
 
 initPrompt = {"role": "system", "content": f"{initPrompt}"}
 messages.append(initPrompt)
+
+if os.path.exists("memory.json"):
+    with open("memory.json", "r") as file:
+        memory = json.load(file)
+
+messages += memory["messages"] if "messages" in memory else []
+chatMessages = memory["chatMessages"] if "chatMessages" in memory else []
 
 # Functions
 # def clear_textbox():
@@ -68,6 +78,7 @@ def button_press():
     text = entry.get()
     entry.delete(0, tk.END)
     send_to_ai_thread(text)
+    optimize_chatbox()
 
 def focus_entry():
     entry.focus_set()
@@ -148,6 +159,22 @@ def send_to_ai_thread(text):
 def on_enter_key(event):
     button_press()
 
+def save_messages_to_memory():
+    global messages, chatMessages
+    memory = {
+        "messages": messages[1:],  # Exclude the init message
+        "chatMessages": chatMessages
+    }
+    with open("memory.json", "w") as file:
+        json.dump(memory, file)
+
+def optimize_chatbox():
+    global chatMessages
+    if len(chatMessages) > 50:
+        chatMessages = chatMessages[-50:]
+        for i in range(50):
+            chatbox.children[i].destroy()
+
 # UI Elements
 root = tk.CTk()
 root.title("Bob Assistant")
@@ -177,4 +204,25 @@ button.place(x=560, y=365)
 # Post-setup
 client = OpenAI(api_key=config["api-key"])
 
+# Load Data
+num_messages = len(messages)
+num_to_print = min(num_messages, 50)
+for i in range(num_messages - num_to_print, num_messages):
+    color = "grey"
+    message = messages[i]
+    role = message["role"]
+    content = message["content"]
+    role = role.replace("user", "You")
+    role = role.replace("assistant", "Bob")
+    role = role.replace("system", "System")
+
+    if role == "Bob":
+        color = "#1776e3"
+    elif role == "System":
+        color = "#ff0000"
+
+    if i != 0:  # Exclude the init message
+        add_message(role, content, color)
+
 root.mainloop()
+save_messages_to_memory()
