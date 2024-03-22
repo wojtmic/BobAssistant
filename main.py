@@ -151,7 +151,7 @@ def send_to_ai(text):
 
         set_topbar("")
         entry.configure(state=tk.NORMAL)
-        button.configure(state=tk.NORMAL)
+        chatbox._parent_canvas.yview_moveto(1.0)
 
 def send_to_ai_thread(text):
     threading.Thread(target=send_to_ai, args=(text,)).start()
