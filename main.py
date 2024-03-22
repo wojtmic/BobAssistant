@@ -9,6 +9,7 @@ import os
 import io
 import threading
 import requests
+import ctypes
 
 # Initial Setup
 with open("config.json", "r") as file:
@@ -60,6 +61,10 @@ def add_message(role, content, color="grey"):
     role = role.strip()
     content = content.strip()
     
+    content = content.replace("**", "")
+    content = content.replace("*", "")
+    content = content.replace("```", "")
+
     message_frame = tk.CTkFrame(chatbox, width=550, height=50, fg_color=color)
     message_frame.pack(side=tk.TOP, pady=5, fill=tk.BOTH, expand=True)
 
@@ -139,7 +144,14 @@ def send_to_ai(text):
                     set_topbar("Executing code...")
                     output = io.StringIO()
                     sys.stdout = output
-                    exec(code)
+                    if code.endswith("[ADMIN]"):
+                        code = code.replace("[ADMIN]","")
+                        if ctypes.windll.shell32.IsUserAnAdmin():
+                            exec(code)
+                        else:
+                            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
+                    else:
+                        exec(code)
                     sys.stdout = sys.__stdout__
                     output = output.getvalue()
                     add_message("Output", output, "#0ec445")
